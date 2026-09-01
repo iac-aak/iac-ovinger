@@ -7,11 +7,24 @@ variable "location" {
 variable "rgname" {
   description = "The name of the resource group"
   type        = string
-  # default     = "rg-demo-aak"
 }
 
 variable "saname" {
   description = "The name of the storage account"
   type        = string
-  # default     = "stdemoaak"
+}
+
+variable "company" {
+  type        = string
+  description = "Company name"
+}
+
+variable "project" {
+  type        = string
+  description = "Project name"
+}
+
+variable "billing_code" {
+  type        = string
+  description = "Billing code - identifies which department is charged"
 }

@@ -9,12 +9,12 @@ terraform {
 
 provider "azurerm" {
   features {}
-  subscription_id = "a3adf20e-4966-4afb-b717-4de1baae6db1"
 }
 
 resource "azurerm_resource_group" "demo" {
   name     = var.rgname
   location = var.location
+  tags     = local.common_tags
 }
 
 resource "azurerm_storage_account" "demo" {
@@ -23,5 +23,6 @@ resource "azurerm_storage_account" "demo" {
   location                 = azurerm_resource_group.demo.location
   account_tier             = "Standard"
   account_replication_type = "LRS"
+  tags                     = local.common_tags
 }
 
