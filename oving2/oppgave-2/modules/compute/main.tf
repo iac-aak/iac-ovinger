@@ -1,5 +1,5 @@
 resource "azurerm_network_interface" "nic" {
-  name                = format(lower("nic-%s-%s"), var.environment, var.name_prefix)
+  name                = lower(format("nic-%s-%s", var.environment, var.name_prefix))
   location            = var.location
   resource_group_name = var.rg_name
 
@@ -13,7 +13,7 @@ resource "azurerm_network_interface" "nic" {
 }
 
 resource "azurerm_linux_virtual_machine" "vm" {
-  name                  = format(lower("vm-%s-%s"), var.environment, var.name_prefix)
+  name                  = lower(format("vm-%s-%s", var.environment, var.name_prefix))
   resource_group_name   = var.rg_name
   location              = var.location
   size                  = var.vm_size
@@ -37,6 +37,6 @@ resource "azurerm_linux_virtual_machine" "vm" {
     version   = "latest"
   }
 
-  computer_name = format(lower("vm-%s-%s"), var.environment, var.name_prefix)
+  computer_name = lower(format("vm-%s-%s", var.environment, var.name_prefix))
   tags          = var.tags
 }

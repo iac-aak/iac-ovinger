@@ -12,7 +12,7 @@ provider "azurerm" {
 }
 
 locals {
-  rg_name = format(lower("rg-%s-%s"), var.environment, var.name_prefix)
+  rg_name = lower(format("rg-%s-%s", var.environment, var.name_prefix))
   common_tags = {
     environment = var.environment
     owner       = var.owner
