@@ -8,9 +8,13 @@ output "subnet_ids" {
   value       = { for k, s in azurerm_subnet.subnet : k => s.id }
 }
 
-output "vnet_name" {
-  description = "Navn på VNet."
-  value       = azurerm_virtual_network.vnet.name
+output "vnet_id" {
+  value       = azurerm_virtual_network.vnet.id
+  description = "ID-en til det virtuelle nettverket – trengs for peering"
 }
 
+output "vnet_name" {
+  value       = azurerm_virtual_network.vnet.name
+  description = "Navnet på det virtuelle nettverket"
+}
 
