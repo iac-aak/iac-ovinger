@@ -1,8 +1,3 @@
-output "subnet_id" {
-  description = "ID til subnettet VM-en skal kobles til (styrt av var.vm_subnet_key)."
-  value       = azurerm_subnet.subnet[var.vm_subnet_key].id
-}
-
 output "subnet_ids" {
   description = "Map fra subnett-navn (nøkkel i var.subnets) til subnett-ID."
   value       = { for k, s in azurerm_subnet.subnet : k => s.id }

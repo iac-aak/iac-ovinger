@@ -8,7 +8,6 @@ module "network" {
   allow_ssh_cidr = var.allow_ssh_cidr
   tags           = var.tags
   subnets        = var.subnets
-  vm_subnet_key  = var.vm_subnet_key
 }
 
 module "compute" {
@@ -17,7 +16,7 @@ module "compute" {
   location           = var.location
   environment        = var.environment
   name_prefix        = var.name_prefix
-  subnet_id          = module.network.subnet_id
+  subnet_id          = module.network.subnet_ids[var.vm_subnet_key]
   vm_size            = var.vm_size
   admin_username     = var.admin_username
   ssh_public_key     = var.ssh_public_key

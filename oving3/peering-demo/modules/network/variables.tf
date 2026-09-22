@@ -1,6 +1,6 @@
 variable "rg_name" {
   type        = string
-  description = "Navn på eksisterende Resource Group der nettverksressurser skal opprettes."
+  description = "Navn på Resource Group der nettverksressurser skal opprettes."
 }
 
 variable "location" {
@@ -8,46 +8,12 @@ variable "location" {
   description = "Azure-region (må samsvare med RG)."
 }
 
-variable "environment" {
+variable "vnet_name" {
   type        = string
-  description = "Miljønavn (dev, test, prod)."
+  description = "Navn på det virtuelle nettverket."
 }
 
-variable "name_prefix" {
+variable "address_space" {
   type        = string
-  description = "Navneprefix for nettverksressurser."
-  default     = "demo"
-}
-
-variable "vnet_cidr"   {
-  type = string
-  default = "10.10.0.0/16"
-  }
-
-variable "allow_ssh_cidr" {
-  type        = string
-  default     = null
-  description = "Tillatt kilde-CIDR for SSH; null for å ikke åpne."
-}
-
-variable "tags" {
-  type        = map(string)
-  default     = {}
-  description = "Ekstra tags."
-}
-variable "subnets" {
-  type        = map(number)
-  description = "Subnett som skal opprettes: navn => netnum innenfor vnet_cidr. Legg til/fjern nøkler her for å endre subnett-oppsettet."
-
-  default = {
-    web  = 0
-    app  = 1
-    data = 2
-  }
-}
-
-variable "vm_subnet_key" {
-  type        = string
-  default     = "app"
-  description = "Hvilken nøkkel i var.subnets VM-en(e) skal kobles til."
+  description = "Adresserom for VNet."
 }

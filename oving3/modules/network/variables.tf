@@ -45,9 +45,3 @@ variable "subnets" {
     data = 2
   }
 }
-
-variable "vm_subnet_key" {
-  type        = string
-  default     = "app"
-  description = "Hvilken nøkkel i var.subnets VM-en(e) skal kobles til."
-}
