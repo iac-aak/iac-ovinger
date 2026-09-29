@@ -1,32 +1,22 @@
-# =============================================================================
-#  environments/<miljø>/variables.tf
-# -----------------------------------------------------------------------------
-#  Også denne fila er identisk i alle tre miljøene. Den DEKLARERER hva som kan
-#  settes; terraform.tfvars SETTER verdiene for nettopp dette miljøet.
-# =============================================================================
-
 variable "name_prefix" {
   type        = string
-  description = <<-TEKST
-    Personlig kortnavn (aak). Alle studentene deler samme tenant, og uten
-    dette kolliderer utrullingen med en medstudents.
-  TEKST
+  description = "Personlig kortnavn (aak), så vi ikke kolliderer med andre studenter i tenanten."
 }
 
 variable "owner" {
   type        = string
-  description = "Eier av ressursene i miljøet (e-post). Brukes i tags."
+  description = "Eier (e-post), brukes i tags."
 }
 
 variable "project" {
   type        = string
   default     = "oppg3"
-  description = "Prosjektnavnet som inngår i alle ressursnavn."
+  description = "Prosjektnavn i ressursnavnene."
 }
 
 variable "environment" {
   type        = string
-  description = "Miljønavnet: dev, test eller prod."
+  description = "dev, test eller prod."
 
   validation {
     condition     = contains(["dev", "test", "prod"], var.environment)
@@ -37,57 +27,50 @@ variable "environment" {
 variable "location" {
   type        = string
   default     = "westeurope"
-  description = "Azure-regionen ressursene opprettes i."
+  description = "Azure-region."
 
   validation {
     condition = contains([
       "northeurope", "uksouth", "westeurope", "norwayeast", "norwaywest",
     ], var.location)
-    error_message = "Bare disse regionene er tillatt i tenanten vår."
+    error_message = "Regionen er ikke tillatt i tenanten."
   }
 }
 
 variable "address_space" {
   type        = string
-  description = <<-TEKST
-    Adresserommet DETTE miljøet disponerer, f.eks. 10.162.0.0/16.
-    Ingen default: adresseplanen er en global beslutning, og en default her
-    ville betydd at alle miljøer arvet samme adresse.
-  TEKST
+  description = "Miljøets adresserom, f.eks. 10.162.0.0/16."
 }
 
 variable "subnets" {
   type        = map(number)
-  description = "Subnett i dette miljøet: navn => netnum."
+  description = "Subnett: navn => netnum."
 }
 
 variable "vm_subnet_key" {
   type        = string
   default     = "app"
-  description = "Nøkkelen til subnettet maskinen skal ligge i."
+  description = "Nøkkel i subnets for subnettet VM-en havner i."
 }
 
 variable "vm_size" {
   type        = string
-  description = "VM-SKU. Skal være mindre i dev enn i prod."
+  description = "VM-SKU."
 }
 
 variable "admin_username" {
   type        = string
   default     = "azureuser"
-  description = "Lokal administratorbruker på maskinen."
+  description = "Admin-bruker på VM-en."
 }
 
 variable "ssh_public_key" {
   type        = string
-  description = "Offentlig SSH-nøkkel som legges inn på maskinen."
+  description = "Offentlig SSH-nøkkel."
 }
 
 variable "subscription_id" {
   type        = string
   default     = null
-  description = <<-TEKST
-    Subscription-ID. Står den som null, brukes ARM_SUBSCRIPTION_ID eller den
-    aktive subscriptionen fra Azure CLI.
-  TEKST
+  description = "Subscription-ID. Null gir ARM_SUBSCRIPTION_ID eller aktiv az-subscription."
 }
