@@ -42,3 +42,33 @@ terraform.rc
 # Optional: ignore plan files saved before destroying Terraform configuration
 # Uncomment the line below if you want to ignore planout files.
 # planout
+
+# --- Ekstra (strengere) ---
+# Plan-filer kan inneholde subscription-ID og sensitive verdier
+*.tfplan
+tfplan
+planout
+
+# Nøkler og hemmeligheter
+*.pem
+*.key
+*.pfx
+.env
+.env.*
+*secrets*.txt
+
+# Terraform-avledet
+.terraform.tfstate.lock.info
+*.tfstate.backup
+
+# macOS / editor
+.DS_Store
+.vscode/
+
+# Personlige notater og besvarelser (ikke til repoet)
+*.md
+
+# Bilder (personlige skjermbilder)
+*.png
+*.jpg
+*.jpeg
