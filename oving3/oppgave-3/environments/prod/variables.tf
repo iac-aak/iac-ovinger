@@ -8,12 +8,6 @@ variable "owner" {
   description = "Eier (e-post), brukes i tags."
 }
 
-variable "project" {
-  type        = string
-  default     = "oppg3"
-  description = "Prosjektnavn i ressursnavnene."
-}
-
 variable "environment" {
   type        = string
   description = "dev, test eller prod."

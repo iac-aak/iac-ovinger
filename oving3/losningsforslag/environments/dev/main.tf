@@ -37,11 +37,10 @@ locals {
   # Miljøet leverer BESTANDDELENE til navnet – hvem, hvilket prosjekt, hvilket
   # miljø. Modulene setter dem sammen til ferdige ressursnavn.
   #
-  # Skillet er verdt å holde fast på: her nede vet vi at vi er "dev" og at
-  # prosjektet heter "oppg3". Vi vet IKKE at et subnet skal ha snet-prefiks,
+  # Skillet er verdt å holde fast på: her nede vet vi at vi er "dev". Vi vet IKKE at et subnet skal ha snet-prefiks,
   # eller at en Windows-maskin bare tåler 15 tegn i computer_name. Den
   # kunnskapen hører hjemme i modulen som eier ressurstypen.
-  base_name = lower(format("%s-%s-%s", var.project, var.environment, var.shortname))
+  base_name = lower(format("%s-%s", var.environment, var.shortname))
  
   # Felles tags. Miljøet eier disse, fordi det er miljøet som avgjør hva de
   # skal si. Husk at tags IKKE arves fra ressursgruppa til ressursene inne i
@@ -49,7 +48,6 @@ locals {
   tags = {
     environment = var.environment
     owner       = var.shortname
-    project     = var.project
     managedby   = "terraform"
   }
 }

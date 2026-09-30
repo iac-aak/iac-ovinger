@@ -17,12 +17,6 @@ variable "shortname" {
   TEKST
 }
  
-variable "project" {
-  type        = string
-  default     = "oppg3"
-  description = "Prosjektnavnet som inngår i alle ressursnavn."
-}
- 
 variable "environment" {
   type        = string
   description = "Miljønavnet: dev, test eller prod."

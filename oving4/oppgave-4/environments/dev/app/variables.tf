@@ -1,6 +1,6 @@
 variable "name_prefix" {
   type        = string
-  description = "Personlig kortnavn (aak), så vi ikke kolliderer med andre studenter i tenanten."
+  description = "Personlig kortnavn (aak)."
 }
 
 variable "owner" {
@@ -22,29 +22,22 @@ variable "location" {
   type        = string
   default     = "westeurope"
   description = "Azure-region."
-
-  validation {
-    condition = contains([
-      "northeurope", "uksouth", "westeurope", "norwayeast", "norwaywest",
-    ], var.location)
-    error_message = "Regionen er ikke tillatt i tenanten."
-  }
 }
 
-variable "address_space" {
+variable "tfstate_resource_group" {
   type        = string
-  description = "Miljøets adresserom, f.eks. 10.162.0.0/16."
+  description = "Ressursgruppa med state-kontoen (samme som i shared/backend.hcl)."
 }
 
-variable "subnets" {
-  type        = map(number)
-  description = "Subnett: navn => netnum."
+variable "tfstate_storage_account" {
+  type        = string
+  description = "State-kontoen (samme som i shared/backend.hcl)."
 }
 
 variable "vm_subnet_key" {
   type        = string
   default     = "app"
-  description = "Nøkkel i subnets for subnettet VM-en havner i."
+  description = "Nøkkel i nettverkets subnet_ids for subnettet VM-en havner i."
 }
 
 variable "vm_size" {

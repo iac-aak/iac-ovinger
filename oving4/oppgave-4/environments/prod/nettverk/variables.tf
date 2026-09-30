@@ -1,6 +1,6 @@
 variable "name_prefix" {
   type        = string
-  description = "Personlig kortnavn (aak), så vi ikke kolliderer med andre studenter i tenanten."
+  description = "Personlig kortnavn (aak)."
 }
 
 variable "owner" {
@@ -22,13 +22,6 @@ variable "location" {
   type        = string
   default     = "westeurope"
   description = "Azure-region."
-
-  validation {
-    condition = contains([
-      "northeurope", "uksouth", "westeurope", "norwayeast", "norwaywest",
-    ], var.location)
-    error_message = "Regionen er ikke tillatt i tenanten."
-  }
 }
 
 variable "address_space" {
@@ -39,28 +32,6 @@ variable "address_space" {
 variable "subnets" {
   type        = map(number)
   description = "Subnett: navn => netnum."
-}
-
-variable "vm_subnet_key" {
-  type        = string
-  default     = "app"
-  description = "Nøkkel i subnets for subnettet VM-en havner i."
-}
-
-variable "vm_size" {
-  type        = string
-  description = "VM-SKU."
-}
-
-variable "admin_username" {
-  type        = string
-  default     = "azureuser"
-  description = "Admin-bruker på VM-en."
-}
-
-variable "ssh_public_key" {
-  type        = string
-  description = "Offentlig SSH-nøkkel."
 }
 
 variable "subscription_id" {

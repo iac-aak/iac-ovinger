@@ -17,13 +17,12 @@ provider "azurerm" {
 }
 
 locals {
-  base_name = lower(format("%s-%s-%s", var.project, var.environment, var.name_prefix))
+  base_name = lower(format("%s-%s", var.environment, var.name_prefix))
 
   # Tags arves ikke fra ressursgruppa, så de sendes nedover.
   common_tags = {
     environment = var.environment
     owner       = var.owner
-    project     = var.project
     managedby   = "terraform"
   }
 }
