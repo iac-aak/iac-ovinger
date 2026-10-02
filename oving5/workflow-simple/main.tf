@@ -16,6 +16,6 @@ provider "azurerm" {
 }
 
 resource "azurerm_resource_group" "rg" {
-  name     = "rg-workflow-aak"
-  location = "westeurope"
+  name     = var.rg_name
+  location = var.location
 }

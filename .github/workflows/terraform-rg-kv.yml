@@ -13,7 +13,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: oving5/oppgave-5/backend-bootstrap
+        working-directory: oving5/workflow-simple
 
     env:
       ARM_USE_OIDC: true
