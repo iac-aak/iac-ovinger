@@ -20,6 +20,14 @@ resource "azurerm_role_assignment" "kv_officer_meg" {
   principal_type       = "User"
 }
 
+# Workflowen skal bare LESE parameterverdier, ikke skrive dem.
+resource "azurerm_role_assignment" "kv_user_pipeline" {
+  scope                = azurerm_key_vault.kv.id
+  role_definition_name = "Key Vault Secrets User"
+  principal_id         = var.pipeline_principal_id
+  principal_type       = "ServicePrincipal"
+}
+
 output "keyvault_name" {
   value = azurerm_key_vault.kv.name
 }

@@ -37,13 +37,12 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Hent parametere fra Key Vault
+      - name: Hent parameterfila fra Key Vault
         run: |
-          KV="${{ secrets.KEYVAULT_NAME }}"
-          RG=$(az keyvault secret show --vault-name "$KV" --name rg-name  --query value -o tsv)
-          LOC=$(az keyvault secret show --vault-name "$KV" --name location --query value -o tsv)
-          echo "TF_VAR_rg_name=$RG"   >> "$GITHUB_ENV"
-          echo "TF_VAR_location=$LOC" >> "$GITHUB_ENV"
+          az keyvault secret show \
+            --vault-name "${{ secrets.KEYVAULT_NAME }}" \
+            --name "tfvars-dev" \
+            --query value -o tsv > params.auto.tfvars
 
       - name: Init
         run: terraform init
@@ -56,3 +55,7 @@ jobs:
 
       - name: Apply
         run: terraform apply -auto-approve
+
+      - name: Slett parameterfila
+        if: always()
+        run: rm -f params.auto.tfvars

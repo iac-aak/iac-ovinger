@@ -3,6 +3,11 @@ variable "shortname" {
   description = "Personlig kortnavn, brukes i navn på ressurser (globalt unikt storage account)."
 }
 
+variable "pipeline_principal_id" {
+  type        = string
+  description = "Object-ID til service principal-en workflowen logger inn som"
+}
+
 variable "location" {
   type        = string
   default     = "westeurope"
