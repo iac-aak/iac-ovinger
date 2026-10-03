@@ -1,13 +1,19 @@
 name: Rull ut webapp
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'oving5/oppgave-5/stacks/webapp/**'
+      - '.github/workflows/terraform-deploy-webapp.yml'
+
   workflow_dispatch:
     inputs:
       environment:
-        description: Hvilket miljø skal rulles ut
+        description: Miljø – gjelder bare ved manuell kjøring
         type: choice
         options: [dev, test, prod]
-        required: true
+        default: dev
 
 permissions:
   id-token: write
@@ -20,13 +26,14 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: ${{ inputs.environment }}
+    environment: ${{ inputs.environment || 'dev' }}
 
     defaults:
       run:
         working-directory: oving5/oppgave-5/stacks/webapp
 
     env:
+      MILJO: ${{ inputs.environment || 'dev' }}
       ARM_USE_OIDC: true
       ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
@@ -52,14 +59,14 @@ jobs:
         run: |
           az keyvault secret show \
             --vault-name "${{ secrets.KEYVAULT_NAME }}" \
-            --name "tfvars-${{ inputs.environment }}" \
+            --name "tfvars-${{ env.MILJO }}" \
             --query value -o tsv > params.auto.tfvars
 
       - name: Init
         run: |
           terraform init \
             -backend-config="${{ github.workspace }}/oving5/oppgave-5/shared/backend.hcl" \
-            -backend-config="key=env/${{ inputs.environment }}/webapp.tfstate"
+            -backend-config="key=env/${{ env.MILJO }}/webapp.tfstate"
 
       - name: Validate
         run: terraform validate
@@ -69,6 +76,20 @@ jobs:
 
       - name: Apply
         run: terraform apply -auto-approve
+
+      - name: Verifiser at appen svarer
+        run: |
+          URL=$(terraform output -raw webapp_url)
+          for i in $(seq 1 10); do
+            if curl -fsS --max-time 10 "https://$URL" > /dev/null; then
+              echo "Appen svarer på https://$URL"
+              exit 0
+            fi
+            echo "Forsøk $i: ikke oppe ennå, venter…"
+            sleep 15
+          done
+          echo "Appen svarte ikke innen tidsfristen"
+          exit 1
 
       - name: Slett parameterfila
         if: always()
