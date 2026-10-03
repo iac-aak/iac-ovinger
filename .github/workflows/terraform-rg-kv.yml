@@ -47,7 +47,7 @@ jobs:
       - name: Init
         run: |
           terraform init \
-            -backend-config="${{ github.workspace }}/oving5/oppgave-5/backend-bootstrap/shared/backend.hcl" \
+            -backend-config="${{ github.workspace }}/oving5/oppgave-5/shared/backend.hcl" \
             -backend-config="key=env/dev/rg.tfstate"
 
       - name: Validate
