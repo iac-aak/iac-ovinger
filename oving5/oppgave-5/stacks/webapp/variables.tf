@@ -24,12 +24,14 @@ variable "location" {
   description = "Azure-region."
 }
 
-variable "address_space" {
+variable "sku" {
   type        = string
-  description = "Miljøets adresserom, f.eks. 10.162.0.0/16."
+  default     = "B1"
+  description = "App Service-plan SKU."
 }
 
-variable "subnets" {
-  type        = map(number)
-  description = "Subnett: navn => netnum."
+variable "node_version" {
+  type        = string
+  default     = "22-lts"
+  description = "Node-versjon for web app-en."
 }
