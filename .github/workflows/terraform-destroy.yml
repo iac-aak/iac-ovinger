@@ -22,7 +22,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: nettverk
+  group: nettverk-${{ inputs.environment }}
   cancel-in-progress: false
 
 jobs:
@@ -51,7 +51,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: oving5/oppgave-5/stacks/webapp
+        working-directory: oving5/oppgave-5/stacks/nettverk
 
     env:
       MILJO: ${{ inputs.environment }}
@@ -89,7 +89,8 @@ jobs:
         run: |
           terraform init \
             -backend-config="${{ github.workspace }}/oving5/oppgave-5/shared/backend.hcl" \
-            -backend-config="key=env/$MILJO/webapp.tfstate"
+            -backend-config="key=env/$MILJO/nettverk.tfstate"
+
       - name: Lag en destroy-plan
         run: terraform plan -destroy -out=tfdestroy
 
@@ -101,4 +102,4 @@ jobs:
 
       - name: Slett parameterfila
         if: always()
-        run: rm -f params.auto.tfvars
+        run: rm -f params.auto.tfvars tfdestroy

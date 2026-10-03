@@ -1,4 +1,5 @@
-# Bootstrap-stack for state-backend. Ingen backend-blokk: state er lokal (K1).
+# Bootstrap-stack for state-backend og Key Vault (keyVault.tf). Ingen backend-blokk: state er lokal.
+# Rolletildelinger til pipeline-identiteten (K4) ligger her og i keyVault.tf.
 
 provider "azurerm" {
   features {}
@@ -6,9 +7,9 @@ provider "azurerm" {
   resource_providers_to_register = [
     "Microsoft.Storage",
     "Microsoft.Authorization",
+    "Microsoft.KeyVault",
   ]
   storage_use_azuread = true
-  
 }
 
 data "azurerm_client_config" "current" {}
@@ -36,11 +37,11 @@ resource "azurerm_storage_account" "sa" {
   account_kind                    = "StorageV2"
   account_replication_type        = "LRS"
   min_tls_version                 = "TLS1_2"
-  shared_access_key_enabled       = false # K2
+  shared_access_key_enabled       = false # kun Entra ID-tilgang
   default_to_oauth_authentication = true
   allow_nested_items_to_be_public = false
 
-  blob_properties { # K3
+  blob_properties { # versjonering og soft delete på state
     versioning_enabled = true
     delete_retention_policy {
       days = 7
@@ -56,7 +57,7 @@ resource "azurerm_storage_account" "sa" {
 resource "azurerm_storage_container" "tfstate" {
   name                  = var.container_name
   storage_account_id    = azurerm_storage_account.sa.id
-  container_access_type = "private" # K4
+  container_access_type = "private"
 }
 
 resource "azurerm_role_assignment" "blob_contributor" {

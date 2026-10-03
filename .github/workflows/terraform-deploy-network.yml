@@ -1,10 +1,11 @@
-name: Rull ut webapp
+name: Rull ut nettverk
 
 on:
   push:
     branches: [main]
     paths:
-      - 'oving5/oppgave-5/stacks/webapp/**'
+      - 'oving5/oppgave-5/stacks/nettverk/**'
+      - 'oving5/oppgave-5/modules/network/**'
       - '.github/workflows/terraform-deploy-webapp.yml'
 
   workflow_dispatch:
@@ -20,17 +21,18 @@ permissions:
   contents: read
 
 concurrency:
-  group: webapp-${{ inputs.environment }}
+  group: nettverk-${{ inputs.environment || 'dev' }}
   cancel-in-progress: false
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    # Push gir tom input og dermed dev. Test og prod krever manuell kjøring.
     environment: ${{ inputs.environment || 'dev' }}
 
     defaults:
       run:
-        working-directory: oving5/oppgave-5/stacks/webapp
+        working-directory: oving5/oppgave-5/stacks/nettverk
 
     env:
       MILJO: ${{ inputs.environment || 'dev' }}
@@ -47,6 +49,8 @@ jobs:
 
       - name: Installer Terraform
         uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_wrapper: false
 
       - name: Logg inn i Azure
         uses: Azure/login@v3.1.0
@@ -59,38 +63,24 @@ jobs:
         run: |
           az keyvault secret show \
             --vault-name "${{ secrets.KEYVAULT_NAME }}" \
-            --name "tfvars-${{ env.MILJO }}" \
+            --name "tfvars-$MILJO" \
             --query value -o tsv > params.auto.tfvars
 
       - name: Init
         run: |
           terraform init \
             -backend-config="${{ github.workspace }}/oving5/oppgave-5/shared/backend.hcl" \
-            -backend-config="key=env/${{ env.MILJO }}/webapp.tfstate"
+            -backend-config="key=env/$MILJO/nettverk.tfstate"
 
       - name: Validate
         run: terraform validate
 
       - name: Plan
-        run: terraform plan
+        run: terraform plan -out=tfplan
 
       - name: Apply
-        run: terraform apply -auto-approve
-
-      - name: Verifiser at appen svarer
-        run: |
-          URL=$(terraform output -raw webapp_url)
-          for i in $(seq 1 10); do
-            if curl -fsS --max-time 10 "https://$URL" > /dev/null; then
-              echo "Appen svarer på https://$URL"
-              exit 0
-            fi
-            echo "Forsøk $i: ikke oppe ennå, venter…"
-            sleep 15
-          done
-          echo "Appen svarte ikke innen tidsfristen"
-          exit 1
+        run: terraform apply tfplan
 
       - name: Slett parameterfila
         if: always()
-        run: rm -f params.auto.tfvars
+        run: rm -f params.auto.tfvars tfplan
