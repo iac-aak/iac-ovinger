@@ -45,7 +45,10 @@ jobs:
             --query value -o tsv > params.auto.tfvars
 
       - name: Init
-        run: terraform init
+        run: |
+          terraform init \
+            -backend-config="${{ github.workspace }}/oving5/oppgave-5/backend-bootstrap/shared/backend.hcl" \
+            -backend-config="key=env/dev/rg.tfstate"
 
       - name: Validate
         run: terraform validate
