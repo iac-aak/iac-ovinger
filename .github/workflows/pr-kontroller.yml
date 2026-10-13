@@ -1,0 +1,33 @@
+name: PR-kontroller
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'oving6/**'
+      - '.github/workflows/pr-kontroller.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  kontroller:
+    name: fmt og validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.16.0
+
+      - name: Sjekk formatering
+        run: terraform fmt -check -recursive
+
+      - name: Klargjør providere uten backend
+        working-directory: oving6/stacks/nettverk
+        run: terraform init -backend=false
+
+      - name: Valider koden
+        working-directory: oving6/stacks/nettverk
+        run: terraform validate
