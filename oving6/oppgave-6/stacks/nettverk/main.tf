@@ -15,7 +15,7 @@ provider "azurerm" {
   features {}
 
   # Fra azurerm 5.0 registreres ingen resource providers automatisk.
-  resource_providers_to_register = [
+  resource_providers_to_register =   [
     "Microsoft.Network",
   ]
 }
