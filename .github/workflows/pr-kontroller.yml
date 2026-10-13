@@ -25,9 +25,9 @@ jobs:
         run: terraform fmt -check -recursive
 
       - name: Klargjør providere uten backend
-        working-directory: oving6/stacks/nettverk
+        working-directory: oving6/oppgave-6/stacks/nettverk
         run: terraform init -backend=false
 
       - name: Valider koden
-        working-directory: oving6/stacks/nettverk
+        working-directory: oving6/oppgave-6/stacks/nettverk
         run: terraform validate
