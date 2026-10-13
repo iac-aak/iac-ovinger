@@ -12,7 +12,7 @@ resource "azurerm_subnet" "subnet" {
   name                 = lower(format("snet-%s-%s", each.key, var.name_prefix))
   resource_group_name  = var.rg_name
   virtual_network_name = azurerm_virtual_network.vnet.name
-  address_prefixes    = [cidrsubnet(var.vnet_cidr, 8, each.value)]
+  address_prefixes     = [cidrsubnet(var.vnet_cidr, 8, each.value)]
 }
 
 resource "azurerm_network_security_group" "nsg" {

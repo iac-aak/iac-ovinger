@@ -4,7 +4,7 @@
 #  En modul er en svart boks: den bestemmer selv hva den deler. Her deler vi
 #  akkurat det den som bruker modulen trenger, og ikke noe mer.
 # =============================================================================
- 
+
 output "subnet_ids" {
   # K6: dette er et MAP, ikke en liste.
   #
@@ -21,19 +21,19 @@ output "subnet_ids" {
   value       = { for k, s in azurerm_subnet.subnet : k => s.id }
   description = "Subnet-ID per subnettnavn."
 }
- 
+
 output "subnet_prefixes" {
   # Praktisk til dokumentasjon og feilsøking: her ser du hva cidrsubnet()
   # faktisk regnet ut, uten å måtte lete i portalen.
   value       = { for k, s in azurerm_subnet.subnet : k => s.address_prefixes[0] }
   description = "Utregnet adresseprefiks per subnettnavn."
 }
- 
+
 output "vnet_id" {
   value       = azurerm_virtual_network.vnet.id
   description = "ID-en til det virtuelle nettverket – trengs blant annet til peering."
 }
- 
+
 output "vnet_name" {
   value       = azurerm_virtual_network.vnet.name
   description = "Navnet på det virtuelle nettverket."

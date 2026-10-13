@@ -6,7 +6,7 @@
 #  ut resten selv. Det er nettopp derfor den samme mappa kan brukes av dev,
 #  test og prod uten en eneste endring.
 # =============================================================================
- 
+
 terraform {
   required_providers {
     azurerm = {
@@ -15,12 +15,12 @@ terraform {
     }
   }
 }
- 
+
 # Legg merke til at det ikke står noen `provider "azurerm"`-blokk her.
 # En child module KREVER en provider, men KONFIGURERER den ikke – selve
 # oppsettet (features, subscription) arves fra root-modulen som kaller den,
 # altså fra environments/<miljø>/. Dette er skillet fra modul 2.
- 
+
 # -----------------------------------------------------------------------------
 #  Virtuelt nettverk
 # -----------------------------------------------------------------------------
@@ -32,17 +32,17 @@ resource "azurerm_virtual_network" "vnet" {
   name                = format("vnet-%s", var.base_name)
   location            = var.location
   resource_group_name = var.rg_name
- 
+
   # K2: ingen adresse skrevet for hånd. Verdien kommer utenfra.
   #
   # Variabelen er én streng, mens argumentet er en liste. Et vnet KAN ha flere
   # adresserom, men vi tar imot ett – fordi vi skal regne på det lenger nede,
   # og cidrsubnet() tar ett prefiks om gangen.
   address_space = [var.address_space]
- 
+
   tags = var.tags
 }
- 
+
 # -----------------------------------------------------------------------------
 #  Subnett – én blokk, mange ressurser
 # -----------------------------------------------------------------------------
@@ -55,11 +55,11 @@ resource "azurerm_subnet" "subnet" {
   # Med `count` ville det stått ["0"] – og da flytter identiteten seg så snart
   # noen setter inn eller fjerner et element i midten av lista.
   for_each = var.subnets
- 
+
   name                 = format("snet-%s-%s", each.key, var.base_name)
   resource_group_name  = var.rg_name
   virtual_network_name = azurerm_virtual_network.vnet.name
- 
+
   # cidrsubnet(prefix, newbits, netnum)
   #   prefix  – adresserommet miljøet ga oss, f.eks. 10.10.0.0/16
   #   newbits – hvor mange bit vi forlenger prefikset med: /16 + 8 = /24
@@ -76,7 +76,7 @@ resource "azurerm_subnet" "subnet" {
     cidrsubnet(var.address_space, var.subnet_newbits, each.value)
   ]
 }
- 
+
 # -----------------------------------------------------------------------------
 #  Network security group
 # -----------------------------------------------------------------------------
@@ -85,12 +85,12 @@ resource "azurerm_network_security_group" "nsg" {
   location            = var.location
   resource_group_name = var.rg_name
   tags                = var.tags
- 
+
   # Ingen egne regler her. Azures standardregler slipper trafikk innenfor
   # det virtuelle nettverket og nekter innkommende trafikk fra internett –
   # som er det vi vil ha så lenge ingen skal logge på maskinen utenfra.
 }
- 
+
 resource "azurerm_subnet_network_security_group_association" "snet_nsg" {
   # K5: for_each kjøres RETT OVER subnet-ressursen, ikke over var.subnets en
   # gang til.
@@ -101,7 +101,7 @@ resource "azurerm_subnet_network_security_group_association" "snet_nsg" {
   #
   # each.value er hele subnet-objektet – derfor each.value.id.
   for_each = azurerm_subnet.subnet
- 
+
   subnet_id                 = each.value.id
   network_security_group_id = azurerm_network_security_group.nsg.id
 }

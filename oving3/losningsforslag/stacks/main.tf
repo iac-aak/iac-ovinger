@@ -15,7 +15,7 @@
 #  at kravet fra Oppgave 2 fortsatt holder: main.tf er identisk i alle tre
 #  miljøene, fordi sammensetningen bare finnes ett sted – nemlig her.
 # =============================================================================
- 
+
 terraform {
   required_providers {
     azurerm = {
@@ -24,10 +24,10 @@ terraform {
     }
   }
 }
- 
+
 module "network" {
   source = "../modules/network"
- 
+
   rg_name        = var.rg_name
   location       = var.location
   base_name      = var.base_name
@@ -36,10 +36,10 @@ module "network" {
   subnet_newbits = var.subnet_newbits
   tags           = var.tags
 }
- 
+
 module "compute" {
   source = "../modules/compute"
- 
+
   rg_name        = var.rg_name
   location       = var.location
   base_name      = var.base_name
@@ -47,7 +47,7 @@ module "compute" {
   admin_username = var.admin_username
   admin_password = var.admin_password
   tags           = var.tags
- 
+
   # Her ser du hva K6 er verdt i praksis. Vi slår opp subnettet PÅ NAVN:
   #
   #     module.network.subnet_ids["app"]

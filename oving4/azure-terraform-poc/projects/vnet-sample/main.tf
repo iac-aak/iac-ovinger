@@ -14,7 +14,7 @@ locals {
 }
 
 resource "azurerm_resource_group" "lab" {
-  name     =  lower(format("rg-%s-%s", var.environment, var.prefix))
+  name = lower(format("rg-%s-%s", var.environment, var.prefix))
 
   location = var.location
 }
