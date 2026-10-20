@@ -1,0 +1,251 @@
+name: Rull ut nettverk (v2)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'oving6/oppgave-6/stacks/nettverk/**'
+      - 'oving6/oppgave-6/modules/network/**'
+      - '.github/workflows/terraform-deploy-network-v2.yml'
+
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Miljø – gjelder bare ved manuell kjøring
+        type: choice
+        options: [dev, test, prod]
+        default: dev
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: nettverk
+  cancel-in-progress: false
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    # Push gir tom input og dermed dev. Test og prod krever manuell kjøring.
+    environment: ${{ inputs.environment || 'dev' }}
+
+    defaults:
+      run:
+        working-directory: oving6/oppgave-6/stacks/nettverk
+
+    env:
+      MILJO: ${{ inputs.environment || 'dev' }}
+      ARM_USE_OIDC: true
+      ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      TF_INPUT: false
+      TF_IN_AUTOMATION: true
+
+    steps:
+      - name: Hent koden
+        uses: actions/checkout@v5
+
+      - name: Installer Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_wrapper: false
+
+      - name: Logg inn i Azure
+        uses: Azure/login@v3.1.0
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Hent parameterfila for miljøet
+        run: |
+          az keyvault secret show \
+            --vault-name "${{ secrets.KEYVAULT_NAME }}" \
+            --name "tfvars-$MILJO" \
+            --query value -o tsv > params.auto.tfvars
+
+      - name: Init
+        run: |
+          terraform init \
+            -backend-config="${{ github.workspace }}/oving6/oppgave-6/shared/backend.hcl" \
+            -backend-config="key=env/$MILJO/nettverk.tfstate"
+
+      - name: Validate
+        run: terraform validate
+
+      - name: Plan
+        run: terraform plan -out=tfplan
+
+      # path regnes fra repo-rota, ikke fra working-directory
+      - name: Ta vare på planen
+        uses: actions/upload-artifact@v7
+        with:
+          name: tfplan-nettverk-${{ inputs.environment || 'dev' }}-${{ github.sha }}
+          path: oving6/oppgave-6/stacks/nettverk/tfplan
+          retention-days: 5
+
+      - name: Slett parameterfila
+        if: always()
+        run: rm -f params.auto.tfvars
+
+  apply:
+    needs: plan
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment || 'dev' }}
+
+    defaults:
+      run:
+        working-directory: oving6/oppgave-6/stacks/nettverk
+
+    env:
+      MILJO: ${{ inputs.environment || 'dev' }}
+      ARM_USE_OIDC: true
+      ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      TF_INPUT: false
+      TF_IN_AUTOMATION: true
+
+    steps:
+      - name: Hent koden
+        uses: actions/checkout@v5
+
+      - name: Installer Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_wrapper: false
+
+      - name: Logg inn i Azure
+        uses: Azure/login@v3.1.0
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Hent planen
+        uses: actions/download-artifact@v8
+        with:
+          name: tfplan-nettverk-${{ inputs.environment || 'dev' }}-${{ github.sha }}
+          path: oving6/oppgave-6/stacks/nettverk
+
+      - name: Init
+        run: |
+          terraform init \
+            -backend-config="${{ github.workspace }}/oving6/oppgave-6/shared/backend.hcl" \
+            -backend-config="key=env/$MILJO/nettverk.tfstate"
+
+      - name: Apply
+        run: terraform apply tfplan
+
+  plan-prod:
+    needs: apply
+    runs-on: ubuntu-latest
+    # Eget navn uten port: lesing og endring av prod er to ulike rettigheter
+    environment: prod-plan
+
+    defaults:
+      run:
+        working-directory: oving6/oppgave-6/stacks/nettverk
+
+    env:
+      ARM_USE_OIDC: true
+      ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      TF_INPUT: false
+      TF_IN_AUTOMATION: true
+
+    steps:
+      - name: Hent koden
+        uses: actions/checkout@v5
+
+      - name: Installer Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_wrapper: false
+
+      - name: Logg inn i Azure
+        uses: Azure/login@v3.1.0
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Hent parameterfila for prod
+        run: |
+          az keyvault secret show \
+            --vault-name "${{ secrets.KEYVAULT_NAME }}" \
+            --name "tfvars-prod" \
+            --query value -o tsv > params.auto.tfvars
+
+      - name: Init
+        run: |
+          terraform init \
+            -backend-config="${{ github.workspace }}/oving6/oppgave-6/shared/backend.hcl" \
+            -backend-config="key=env/prod/nettverk.tfstate"
+
+      - name: Plan
+        run: terraform plan -out=tfplan
+
+      # path regnes fra repo-rota, ikke fra working-directory
+      - name: Ta vare på planen
+        uses: actions/upload-artifact@v7
+        with:
+          name: tfplan-nettverk-prod-${{ github.sha }}
+          path: oving6/oppgave-6/stacks/nettverk/tfplan
+          retention-days: 5
+
+      - name: Slett parameterfila
+        if: always()
+        run: rm -f params.auto.tfvars
+
+  apply-prod:
+    needs: plan-prod
+    runs-on: ubuntu-latest
+    # Porten (required reviewers) ligger på dette environmentet
+    environment: prod
+
+    defaults:
+      run:
+        working-directory: oving6/oppgave-6/stacks/nettverk
+
+    env:
+      ARM_USE_OIDC: true
+      ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      TF_INPUT: false
+      TF_IN_AUTOMATION: true
+
+    steps:
+      - name: Hent koden
+        uses: actions/checkout@v5
+
+      - name: Installer Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_wrapper: false
+
+      - name: Logg inn i Azure
+        uses: Azure/login@v3.1.0
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Hent planen
+        uses: actions/download-artifact@v8
+        with:
+          name: tfplan-nettverk-prod-${{ github.sha }}
+          path: oving6/oppgave-6/stacks/nettverk
+
+      - name: Init
+        run: |
+          terraform init \
+            -backend-config="${{ github.workspace }}/oving6/oppgave-6/shared/backend.hcl" \
+            -backend-config="key=env/prod/nettverk.tfstate"
+
+      - name: Apply
+        run: terraform apply tfplan

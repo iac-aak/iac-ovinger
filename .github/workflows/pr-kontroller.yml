@@ -22,12 +22,12 @@ jobs:
           terraform_version: 1.16.0
 
       - name: Sjekk formatering
-        run: terraform fmt -check -recursive
+        run: terraform fmt -check -recursive oving6
 
       - name: Klargjør providere uten backend
-        working-directory: oving6/stacks/nettverk
+        working-directory: oving6/oppgave-6/stacks/nettverk
         run: terraform init -backend=false
 
       - name: Valider koden
-        working-directory: oving6/stacks/nettverk
+        working-directory: oving6/oppgave-6/stacks/nettverk
         run: terraform validate
