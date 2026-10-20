@@ -58,7 +58,7 @@ jobs:
       - name: Init
         run: |
           terraform init \
-            -backend-config="${{ github.workspace }}/oving6/shared/backend.hcl" \
+            -backend-config="${{ github.workspace }}/oving6/oppgave-6/shared/backend.hcl" \
             -backend-config="key=env/dev/nettverk.tfstate"
 
       - name: Plan
