@@ -2,10 +2,9 @@ name: PR-kontroller
 
 on:
   pull_request:
+    # Ingen paths-filter: sjekken er required, og en PR som ikke matcher et
+    # filter får aldri rapportert den, så den blir stående som BLOCKED.
     branches: [main]
-    paths:
-      - 'oving6/**'
-      - '.github/workflows/pr-kontroller.yml'
 
 permissions:
   contents: read
