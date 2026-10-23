@@ -51,7 +51,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: oving5/oppgave-5/stacks/nettverk
+        working-directory: oving6/oppgave-6/stacks/nettverk
 
     env:
       MILJO: ${{ inputs.environment }}
@@ -88,7 +88,7 @@ jobs:
       - name: Init
         run: |
           terraform init \
-            -backend-config="${{ github.workspace }}/oving5/oppgave-5/shared/backend.hcl" \
+            -backend-config="${{ github.workspace }}/oving6/oppgave-6/shared/backend.hcl" \
             -backend-config="key=env/$MILJO/nettverk.tfstate"
 
       - name: Lag en destroy-plan
