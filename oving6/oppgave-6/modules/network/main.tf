@@ -7,7 +7,7 @@ terraform {
   }
 }
 
-resource "azurerm_virtual_network" "vnet" {
+resource "azurerm_virtual_network" "network" {
   name                = format("vnet-%s", var.base_name)
   location            = var.location
   resource_group_name = var.rg_name
@@ -21,7 +21,7 @@ resource "azurerm_subnet" "subnet" {
 
   name                 = format("snet-%s-%s", each.key, var.base_name)
   resource_group_name  = var.rg_name
-  virtual_network_name = azurerm_virtual_network.vnet.name
+  virtual_network_name = azurerm_virtual_network.network.name
 
   # netnum kommer fra mapet, ikke fra index(), så et subnett beholder adressen
   # sin om andre legges til eller fjernes.

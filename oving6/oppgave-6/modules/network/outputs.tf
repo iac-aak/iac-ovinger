@@ -10,11 +10,11 @@ output "subnet_prefixes" {
 }
 
 output "vnet_id" {
-  value       = azurerm_virtual_network.vnet.id
+  value       = azurerm_virtual_network.network.id
   description = "ID-en til vnet."
 }
 
 output "vnet_name" {
-  value       = azurerm_virtual_network.vnet.name
+  value       = azurerm_virtual_network.network.name
   description = "Navnet på vnet."
 }
