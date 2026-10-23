@@ -7,6 +7,6 @@ output "subnet_ids" {
 }
 
 output "vnet_name" {
-  value = module.network.vnet_name
+  value       = module.network.vnet_name
   description = "Navnet på det virtuelle nettverket."
 }
