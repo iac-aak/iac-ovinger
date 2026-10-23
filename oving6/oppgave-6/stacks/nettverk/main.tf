@@ -47,6 +47,3 @@ module "network" {
   subnets       = var.subnets
   tags          = local.common_tags
 }
-
-
-# Test prod-plan workflow
