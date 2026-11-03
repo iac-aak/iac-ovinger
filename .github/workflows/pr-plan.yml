@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: [main]
     paths:
-      - 'oving6/**'
+      - 'oving8/**'
 
 permissions:
   id-token: write
@@ -22,7 +22,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: oving6/oppgave-6/stacks/nettverk
+        working-directory: oving8/oppgave-8/stacks/nettverk
 
     env:
       ARM_USE_OIDC: true
@@ -58,7 +58,7 @@ jobs:
       - name: Init
         run: |
           terraform init \
-            -backend-config="${{ github.workspace }}/oving6/oppgave-6/shared/backend.hcl" \
+            -backend-config="${{ github.workspace }}/oving8/oppgave-8/shared/backend.hcl" \
             -backend-config="key=env/dev/nettverk.tfstate"
 
       - name: Plan
