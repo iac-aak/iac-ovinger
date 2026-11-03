@@ -1,0 +1,10 @@
+# Bare Terraform-sjekker. Uten denne prøver Checkov også å lese
+# skriptene, README-en og alt annet den finner.
+framework:
+  - terraform
+
+# Ikke vis kodeblokker i utskriften – bare hva som feilet og hvor.
+compact: true
+
+# Vis bare det som feilet. Det som gikk bra, telles, men listes ikke.
+quiet: true

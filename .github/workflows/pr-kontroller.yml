@@ -44,7 +44,7 @@ jobs:
       # --- Kjør kontrollene: det samme skriptet som kjøres lokalt ---------
       - name: Kjør valider.sh
         # Stien regnes fra rota av repoet, som alle stier i en workflow.
-        run: bash oving7/oppgave-7/scripts/valider.sh
+        run: bash oving8/oppgave-8/scripts/valider.sh
         env:
           # tflint --init laster ned Azure-pluginen fra GitHub. Med token
           # slipper man «rate limit» når mange kjører samtidig.

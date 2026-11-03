@@ -4,8 +4,8 @@ on:
   push:
     branches: [main]
     paths:
-      - 'oving6/oppgave-6/stacks/nettverk/**'
-      - 'oving6/oppgave-6/modules/network/**'
+      - 'oving8/oppgave-8/stacks/nettverk/**'
+      - 'oving8/oppgave-8/modules/network/**'
       - '.github/workflows/terraform-deploy-network-v2.yml'
       - '.github/workflows/terraform-env.yml'
 

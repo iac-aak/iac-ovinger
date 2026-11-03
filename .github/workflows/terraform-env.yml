@@ -25,7 +25,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: oving6/oppgave-6/stacks/nettverk
+        working-directory: oving8/oppgave-8/stacks/nettverk
 
     env:
       MILJO: ${{ inputs.miljo }}
@@ -62,7 +62,7 @@ jobs:
       - name: Init
         run: |
           terraform init \
-            -backend-config="${{ github.workspace }}/oving6/oppgave-6/shared/backend.hcl" \
+            -backend-config="${{ github.workspace }}/oving8/oppgave-8/shared/backend.hcl" \
             -backend-config="key=env/$MILJO/nettverk.tfstate"
 
       - name: Validate
@@ -76,7 +76,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: tfplan-nettverk-${{ inputs.miljo }}-${{ github.sha }}
-          path: oving6/oppgave-6/stacks/nettverk/tfplan
+          path: oving8/oppgave-8/stacks/nettverk/tfplan
           retention-days: 5
 
       - name: Slett parameterfila
@@ -92,7 +92,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: oving6/oppgave-6/stacks/nettverk
+        working-directory: oving8/oppgave-8/stacks/nettverk
 
     env:
       MILJO: ${{ inputs.miljo }}
@@ -123,12 +123,12 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           name: tfplan-nettverk-${{ inputs.miljo }}-${{ github.sha }}
-          path: oving6/oppgave-6/stacks/nettverk
+          path: oving8/oppgave-8/stacks/nettverk
 
       - name: Init
         run: |
           terraform init \
-            -backend-config="${{ github.workspace }}/oving6/oppgave-6/shared/backend.hcl" \
+            -backend-config="${{ github.workspace }}/oving8/oppgave-8/shared/backend.hcl" \
             -backend-config="key=env/$MILJO/nettverk.tfstate"
 
       - name: Apply
