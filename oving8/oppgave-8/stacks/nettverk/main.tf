@@ -47,3 +47,5 @@ module "network" {
   subnets       = var.subnets
   tags          = local.common_tags
 }
+
+# Kommentar for å kjøre pr-plan.yml
