@@ -10,23 +10,42 @@ permissions:
   contents: read
 
 jobs:
-  kontroller:
-    name: fmt og validate
+  kontroll:
+    # Nytt navn: jobben gjør mer enn fmt og validate nå. Dette er navnet som
+    # velges som required status check i branch protection.
+    name: kodekontroll
     runs-on: ubuntu-latest
+
+    # Ingen environment, ingen Azure/login, ingen secrets.
+    # Alle fire kontrollene er offline.
     steps:
-      - uses: actions/checkout@v5
+      - name: Hent koden
+        uses: actions/checkout@v5
 
-      - uses: hashicorp/setup-terraform@v3
+      # --- Installer verktøyene, med låste versjoner ---------------------
+      - name: Installer Terraform
+        uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: 1.16.0
+          terraform_version: 1.17.1
 
-      - name: Sjekk formatering
-        run: terraform fmt -check -recursive oving6
+      - name: Installer TFLint
+        uses: terraform-linters/setup-tflint@v6
+        with:
+          tflint_version: v0.65.0
 
-      - name: Klargjør providere uten backend
-        working-directory: oving6/oppgave-6/stacks/nettverk
-        run: terraform init -backend=false
+      - name: Installer Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
 
-      - name: Valider koden
-        working-directory: oving6/oppgave-6/stacks/nettverk
-        run: terraform validate
+      - name: Installer Checkov
+        run: pip install checkov==3.3.21
+
+      # --- Kjør kontrollene: det samme skriptet som kjøres lokalt ---------
+      - name: Kjør valider.sh
+        # Stien regnes fra rota av repoet, som alle stier i en workflow.
+        run: bash oving7/oppgave-7/scripts/valider.sh
+        env:
+          # tflint --init laster ned Azure-pluginen fra GitHub. Med token
+          # slipper man «rate limit» når mange kjører samtidig.
+          GITHUB_TOKEN: ${{ github.token }}
