@@ -9,6 +9,9 @@ on:
       - '.github/workflows/terraform-deploy-network-v2.yml'
       - '.github/workflows/terraform-env.yml'
 
+  # Manuell utrulling, f.eks. når ryddejobben har slettet dev
+  workflow_dispatch:
+
 permissions:
   id-token: write
   contents: read
