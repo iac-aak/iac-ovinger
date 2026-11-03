@@ -20,7 +20,7 @@ resource "azurerm_virtual_network" "vnet" {
 resource "azurerm_subnet" "subnet" {
   for_each = var.subnets
 
-  name                 = format("snet-%s-%s", each.key, var.base_name)
+  name                 = format("subnet-%s-%s", each.key, var.base_name)
   resource_group_name  = var.rg_name
   virtual_network_name = azurerm_virtual_network.vnet.name
 
